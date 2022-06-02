@@ -1,19 +1,48 @@
-const { insertFileService } = require("../services/record");
+const { insertFileService, listRecordService, removeService } = require("../services/record");
 
 const insertFile = async (req, res) => {
-  const { recordName, sensors } = req.body;
+  const { description, sensors } = req.body;
 
-  if (!recordName)
-    return res.status(400).json({ error: 'recordName is invalid' });
+  if (!description)
+    return res.status(400).json({ error: 'Campo "description" é inválido' });
 
   if (!sensors)
-    return res.status(400).json({ error: 'sensors is invalid' });
+    return res.status(400).json({ error: 'Campo "sensors" é inválido' });
 
   if (Object.keys(sensors).length === 0)
-    return res.status(400).json({ error: 'no sensor data provided' });
+    return res.status(400).json({ error: 'Nenhum dado de sensor fornecido' });
 
   try {
-    const response = await insertFileService(sensors, recordName)
+    const response = await insertFileService(sensors, description)
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
+const list = async (req, res) => {
+  try {
+    const response = await listRecordService();
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+};
+
+const remove = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id)
+    return res.status(400).json({ error: 'Campo "id" é inválido' });
+
+  try {
+    const response = await removeService(id);
+    if (response.error)
+      return res.status(400).json(response);
 
     return res.status(200).json(response);
 
@@ -23,5 +52,7 @@ const insertFile = async (req, res) => {
 };
 
 module.exports = {
-  insertFile
+  insertFile,
+  list,
+  remove
 }
