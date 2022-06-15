@@ -14,9 +14,9 @@ const insertFileService = async (sensors, description) => {
     let rowsError = 0;
     Object.keys(sensors).forEach(sensorName => {
       const rows = sensors[sensorName].split('\n').filter(row => !(!row));
-      const att = rows.splice(0, 1)[0].split(',');
+      const att = rows.splice(0, 1)[0].split(';');
       rows.forEach(row => {
-        const arguments = row.split(',');
+        const arguments = row.split(';');
         if (arguments.length !== 4) {
           rowsError++;
           return;
