@@ -1,8 +1,8 @@
-const { RecordModel, SensorDataModel } = require('../database');
+const { RecordModel, SensorDataModel, GpsDataModel } = require('../database');
 
 const { ObjectId } = require('mongoose').Types;
 
-const insertFileService = async (sensors, description) => {
+const insertFileService = async (sensors, description, location) => {
   try {
 
     const record = await RecordModel.create({ description });
@@ -10,7 +10,8 @@ const insertFileService = async (sensors, description) => {
     if (!record)
       return res.status(400).json({ error: 'Erro ao salvar' });
 
-    const data = [];
+    // insert sensor data
+    const sensorData = [];
     let rowsError = 0;
     Object.keys(sensors).forEach(sensorName => {
       const rows = sensors[sensorName].split('\n').filter(row => !(!row));
@@ -30,14 +31,36 @@ const insertFileService = async (sensors, description) => {
           newObject[key] = arguments[index]
         });
 
-        data.push(newObject);
+        sensorData.push(newObject);
       })
+    });
+
+    // insert gps data
+    const gpsData = [];
+    const gpsDataRows = location.split('\n').filter(row => !(!row));
+    gpsDataRows.splice(0, 1);
+    gpsDataRows.forEach(row => {
+      const arguments = row.split(';');
+      if (arguments.length !== 4) {
+        rowsError++;
+        return;
+      }
+
+      gpsData.push({
+        lat: arguments[0],
+        lon: arguments[1],
+        alt: arguments[2],
+        timestamp: arguments[3],
+        id_record: record.id
+      });
     });
 
     if (rowsError !== 0)
       console.log(`- Erro: ${rowsError} linhas inválidas`);
 
-    await SensorDataModel.insertMany(data);
+    await SensorDataModel.insertMany(sensorData);
+    await GpsDataModel.insertMany(gpsData);
+
     return { msg: `Arquivo salvo com ${rowsError} linhas inválidas` };
 
   } catch (error) {
