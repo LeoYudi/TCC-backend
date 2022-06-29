@@ -1,7 +1,7 @@
 const { insertFileService, listRecordService, removeService } = require("../services/record");
 
 const insertFile = async (req, res) => {
-  const { description, sensors } = req.body;
+  const { description, sensors, location } = req.body;
 
   if (!description)
     return res.status(400).json({ error: 'Campo "description" é inválido' });
@@ -9,11 +9,14 @@ const insertFile = async (req, res) => {
   if (!sensors)
     return res.status(400).json({ error: 'Campo "sensors" é inválido' });
 
+  if (!location)
+    return res.status(400).json({ error: 'Campo "location" é inválido' });
+
   if (Object.keys(sensors).length === 0)
     return res.status(400).json({ error: 'Nenhum dado de sensor fornecido' });
 
   try {
-    const response = await insertFileService(sensors, description)
+    const response = await insertFileService(sensors, description, location);
 
     return res.status(200).json(response);
 

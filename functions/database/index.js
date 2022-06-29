@@ -33,11 +33,24 @@ const SensorDataSchema = new Schema({
   }
 });
 
+const GpsDataSchema = new Schema({
+  lat: Number,
+  lon: Number,
+  alt: Number,
+  timestamp: Number,
+  id_record: {
+    type: Schema.ObjectId,
+    ref: 'records'
+  }
+});
+
 const RecordModel = mongoose.model('records', RecordSchema);
 const SensorDataModel = mongoose.model('sensor_datas', SensorDataSchema);
+const GpsDataModel = mongoose.model('gps_datas', GpsDataSchema);
 
 module.exports = {
   connect,
   RecordModel,
-  SensorDataModel
+  SensorDataModel,
+  GpsDataModel
 };
