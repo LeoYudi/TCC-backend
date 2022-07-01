@@ -1,4 +1,4 @@
-const { insertFileService, listRecordService, removeService } = require("../services/record");
+const { insertFileService, listRecordService, removeService, getByIdService } = require("../services/record");
 
 const insertFile = async (req, res) => {
   const { description, sensors, location } = req.body;
@@ -36,6 +36,19 @@ const list = async (req, res) => {
   }
 };
 
+const getById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const response = await getByIdService(id);
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+}
+
 const remove = async (req, res) => {
   const { id } = req.params;
 
@@ -57,5 +70,6 @@ const remove = async (req, res) => {
 module.exports = {
   insertFile,
   list,
+  getById,
   remove
 }

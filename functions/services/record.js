@@ -76,6 +76,50 @@ const listRecordService = async () => {
   }
 };
 
+const getByIdService = async id => {
+  try {
+    const rawData = await RecordModel.aggregate([{
+      $match: { _id: ObjectId(id) },
+    }, {
+      $lookup: {
+        from: 'sensor_datas',
+        localField: '_id',
+        foreignField: 'id_record',
+        as: 'sensors'
+      }
+    }, {
+      $lookup: {
+        from: 'gps_datas',
+        localField: '_id',
+        foreignField: 'id_record',
+        as: 'locations'
+      }
+    }]);
+
+    if (rawData.length === 0)
+      throw { error: 'record not found' };
+
+    const result = {
+      description: rawData[0].description,
+      created_at: rawData[0].created_at,
+      sensors: {},
+      locations: rawData[0].locations,
+    };
+
+    rawData[0].sensors.forEach(sensorData => {
+      if (!result.sensors[sensorData.sensor])
+        result.sensors[sensorData.sensor] = [];
+
+      result.sensors[sensorData.sensor].push(sensorData);
+    });
+
+    return result;
+
+  } catch (error) {
+    throw { error };
+  }
+};
+
 const removeService = async (id) => {
   try {
     const record = await RecordModel.findById(id);
@@ -93,4 +137,4 @@ const removeService = async (id) => {
   }
 };
 
-module.exports = { insertFileService, listRecordService, removeService };
+module.exports = { insertFileService, listRecordService, getByIdService, removeService };
