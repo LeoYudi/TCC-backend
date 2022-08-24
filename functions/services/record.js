@@ -113,6 +113,10 @@ const getByIdService = async id => {
       result.sensors[sensorData.sensor].push(sensorData);
     });
 
+    Object.keys(result.sensors).forEach(sensor => result.sensors[sensor].sort((curr, next) => curr.timestamp - next.timestamp));
+
+    result.locations.sort((curr, next) => curr.timestamp - next.timestamp);
+
     return result;
 
   } catch (error) {

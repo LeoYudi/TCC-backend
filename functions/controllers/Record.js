@@ -21,6 +21,7 @@ const insertFile = async (req, res) => {
     return res.status(200).json(response);
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 };
@@ -32,6 +33,7 @@ const list = async (req, res) => {
     return res.status(200).json(response);
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 };
@@ -45,6 +47,7 @@ const getById = async (req, res) => {
     return res.status(200).json(response);
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 }
@@ -63,6 +66,7 @@ const remove = async (req, res) => {
     return res.status(200).json(response);
 
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 };
