@@ -41,6 +41,9 @@ const list = async (req, res) => {
 const getById = async (req, res) => {
   const { id } = req.params;
 
+  if (!id)
+    return res.status(400).json({ error: 'Campo "id" é inválido' });
+
   try {
     const response = await getByIdService(id);
 
