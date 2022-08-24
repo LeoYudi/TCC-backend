@@ -77,6 +77,9 @@ const listRecordService = async () => {
 };
 
 const getByIdService = async id => {
+  if (!ObjectId.isValid(id))
+    return { error: 'Campo "id" é inválido' };
+
   try {
     const rawData = await RecordModel.aggregate([{
       $match: { _id: ObjectId(id) },
@@ -125,6 +128,9 @@ const getByIdService = async id => {
 };
 
 const removeService = async (id) => {
+  if (!ObjectId.isValid(id))
+    return { error: 'Campo "id" é inválido' };
+
   try {
     const record = await RecordModel.findById(id);
 
