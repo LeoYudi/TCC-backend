@@ -1,4 +1,4 @@
-const { insertFileService, listRecordService, removeService, getByIdService } = require("../services/record");
+const { insertFileService, listRecordService, removeService, getByIdService, verifyIntervalsService } = require("../services/record");
 
 const insertFile = async (req, res) => {
   const { description, sensors, location } = req.body;
@@ -53,6 +53,23 @@ const getById = async (req, res) => {
     console.log(error);
     return res.status(500).json({ error });
   }
+};
+
+const verifyIntervals = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id)
+    return res.status(400).json({ error: 'Campo "id" é inválido' });
+
+  try {
+    const response = await verifyIntervalsService(id);
+
+    return res.status(200).json(response);
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
+  }
 }
 
 const remove = async (req, res) => {
@@ -78,5 +95,6 @@ module.exports = {
   insertFile,
   list,
   getById,
+  verifyIntervals,
   remove
 }

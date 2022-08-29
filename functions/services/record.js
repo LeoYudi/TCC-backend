@@ -127,6 +127,46 @@ const getByIdService = async id => {
   }
 };
 
+const verifyIntervalsService = async id => {
+  if (!ObjectId.isValid(id))
+    return { error: 'Campo "id" é inválido' };
+
+  try {
+    const record = await getByIdService(id);
+
+    const sensors = {};
+    let prevTime = null;
+
+    Object.keys(record.sensors).forEach(sensor => {
+      sensors[sensor] = {
+        biggestGap: 0,
+        lowestGap: Infinity
+      }
+      for (const register of record.sensors[sensor]) {
+        if (!prevTime) {
+          prevTime = register.timestamp;
+          continue;
+        }
+
+        if (sensors[sensor].biggestGap < register.timestamp - prevTime)
+          sensors[sensor].biggestGap = register.timestamp - prevTime;
+
+        if (sensors[sensor].lowestGap > register.timestamp - prevTime)
+          sensors[sensor].lowestGap = register.timestamp - prevTime;
+
+        prevTime = register.timestamp;
+      }
+
+      prevTime = null;
+    });
+
+    return { sensors };
+
+  } catch (error) {
+    throw { error };
+  }
+}
+
 const removeService = async (id) => {
   if (!ObjectId.isValid(id))
     return { error: 'Campo "id" é inválido' };
@@ -147,4 +187,10 @@ const removeService = async (id) => {
   }
 };
 
-module.exports = { insertFileService, listRecordService, getByIdService, removeService };
+module.exports = {
+  insertFileService,
+  listRecordService,
+  getByIdService,
+  verifyIntervalsService,
+  removeService
+};
