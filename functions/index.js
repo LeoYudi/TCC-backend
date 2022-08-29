@@ -15,7 +15,7 @@ exports.tcc_functions = functions.region('southamerica-east1').https.onRequest(a
   app.post('/insert-file', insertFile);
   app.get('/records', list);
   app.get('/records/:id', getById);
-  app.get('/verify/:id', verifyIntervals);
+  app.get('/records/verify/:id', verifyIntervals);
   app.delete('/records/:id', remove);
 
   return app(req, res);
